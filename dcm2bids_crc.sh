@@ -6,21 +6,21 @@ cat <<EOF
 
 Version edited on 24.03.2023
 
-This script has been developed by Srinivas Balachander and Rujuta Parlikar for the Clinical Research Centre for Neuromodulaiton in Psychiatry
+This script has been developed by Srinivas Balachander and Rujuta Parlikar for the Clinical Research Centre for Neuromodulation in Psychiatry
 
 All folders within your DICOM directory should be names as per the project's convention, e.g, 10DEPCRC31001
 
-The following argument is needed:
+The following argument is REQUIRED:
 
-Bids_CRC.sh --dicom <path/to/dicom>
+ dcm2bids_CRC.sh --dicom <path/to/dicom>
 
-The following arguments are optional:
+The following arguments are OPTIONAL:
 
---bids <path/to/bids>: If this is not provided, the default is BIDS
+ --bids <path/to/bids>: If this is not provided, the default is BIDS
 
---subj: The DICOM folder name of the subject/session that you want to specifically convert. If this is not specified, then this is attempt to convert all subjects within the DICOM directory for whom conversion has not yet been done.
+ --subj: The DICOM folder name of the subject/session that you want to specifically convert. If this is not specified, then this is attempt to convert all subjects within the DICOM directory for whom conversion has not yet been done.
 
---ncores: Number of parallel cores to use for conversion (Default: 8)
+ --ncores: Number of parallel cores to use for conversion (Default: 8)
 
 EOF
 exit 1
