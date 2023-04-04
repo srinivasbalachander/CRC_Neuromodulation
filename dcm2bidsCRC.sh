@@ -86,10 +86,12 @@ task(){
 	SUBID=${i:2:11}
 
 	if [ -d "${BIDSDIR}/sub-${SUBID}/ses-${SES}" ]; then
+	 echo "........"
 	 echo "BIDS conversion for sub-${SUBID} and ses-${SES} is already done, moving on to the next.."
 	 echo " "
 
 	 else
+	  echo "........"
 	  echo  "Starting Nifti conversion for ${i}"
 	  echo " "
 
@@ -97,7 +99,8 @@ task(){
 	mkdir -p nifti/${i}
 
 	dcm2niix -b y -ba n -z y -f '%f_%p' -o nifti/${i} ${DICOMDIR}/${i}
-
+	
+	echo "........"
 	echo "${i} is converted to Nifti"
 	echo "BIDS transformation for ses-$SES of sub-$SUBID has begun!"
 	echo "........"
@@ -203,5 +206,5 @@ task(){
 for i in `basename -a ${DICOMDIR}/*`; do
 
 	((j=j%NCORES)); ((j++==0)) && wait
-	task $i &;
+	task ${i} &
 done
