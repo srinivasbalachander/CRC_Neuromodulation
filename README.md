@@ -1,4 +1,6 @@
-![CRC_logo](https://user-images.githubusercontent.com/55076917/236701178-d37cf2b8-5450-468e-b40d-f7c581a3b284.jpeg)
+
+<img src="https://user-images.githubusercontent.com/55076917/236701178-d37cf2b8-5450-468e-b40d-f7c581a3b284.jpeg" width="100" height="100">
+
 
 # CRC_Neuromodulation
 
