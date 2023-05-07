@@ -1,3 +1,5 @@
+![CRC_logo](https://user-images.githubusercontent.com/55076917/236701178-d37cf2b8-5450-468e-b40d-f7c581a3b284.jpeg)
+
 # CRC_Neuromodulation
 
 Scripts for processing and analyzing data generated from the DBT-Wellcome India Alliance Clinical Research Centre for Neuromodulation in Psychiatry
