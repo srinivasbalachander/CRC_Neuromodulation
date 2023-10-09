@@ -5,9 +5,16 @@ Usage() {
 
 cat <<EOF
 
-Version edited on 30.03.2023
+#-------------------------------------------------------------------------------------------------------------------------------------#
+# ____________________________    _______                                                .___    .__          __  .__                 #
+# \_   ___ \______   \_   ___ \   \      \   ____  __ _________  ____   _____   ____   __| _/_ __|  | _____ _/  |_|__| ____   ____    # 
+# /    \  \/|       _/    \  \/   /   |   \_/ __ \|  |  \_  __ \/  _ \ /     \ /  _ \ / __ |  |  \  | \__  \\   __\  |/  _ \ /    \   #
+# \     \___|    |   \     \____ /    |    \  ___/|  |  /|  | \(  <_> )  Y Y  (  <_> ) /_/ |  |  /  |__/ __ \|  | |  (  <_> )   |  \  #
+#  \______  /____|_  /\______  / \____|__  /\___  >____/ |__|   \____/|__|_|  /\____/\____ |____/|____(____  /__| |__|\____/|___|  /  # 
+#         \/       \/        \/          \/     \/                          \/            \/               \/                    \/   #
+#-------------------------------------------------------------------------------------------------------------------------------------#
 
-This script has been developed by Srinivas Balachander and Rujuta Parlikar for the Clinical Research Centre for Neuromodulation in Psychiatry
+This script has been developed by Srinivas Balachander and Rujuta Parlikar for the Clinical Research Centre for Neuromodulation in Psychiatry. Version edited on 30.03.2023
 
 All folders within your DICOM directory should be names as per the project's convention, e.g, 10DEPCRC31001
 
@@ -203,7 +210,11 @@ task(){
 
 # The main 'for loop' for the dcm2bids conversion
 
-for i in `basename -a ${DICOMDIR}/*`; do
+if [ -z ${SUBJS} ]; then
+	SUBJS=basename -a ${DICOMDIR}/*
+fi
+
+for i in `echo $SUBJS`; do
 
 	((j=j%NCORES)); ((j++==0)) && wait
 	task ${i} &
