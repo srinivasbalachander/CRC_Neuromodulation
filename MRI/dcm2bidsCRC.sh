@@ -214,7 +214,7 @@ if [ -z ${SUBJS} ]; then
 	SUBJS=basename -a ${DICOMDIR}/*
 fi
 
-for i in `echo $SUBJS`; do
+for i in ${SUBJS}; do
 
 	((j=j%NCORES)); ((j++==0)) && wait
 	task ${i} &
