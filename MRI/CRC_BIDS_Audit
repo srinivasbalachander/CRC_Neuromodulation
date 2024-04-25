@@ -1,0 +1,121 @@
+#!/bin/bash
+#--------------------------------------------------------------------------#
+
+Usage() {
+
+cat <<EOF
+
+#-------------------------------------------------------------------------------------------------------------------------------------#
+# ____________________________    _______                                                .___    .__          __  .__                 #
+# \_   ___ \______   \_   ___ \   \      \   ____  __ _________  ____   _____   ____   __| _/_ __|  | _____ _/  |_|__| ____   ____    # 
+# /    \  \/|       _/    \  \/   /   |   \_/ __ \|  |  \_  __ \/  _ \ /     \ /  _ \ / __ |  |  \  | \__  \\   __\  |/  _ \ /    \   #
+# \     \___|    |   \     \____ /    |    \  ___/|  |  /|  | \(  <_> )  Y Y  (  <_> ) /_/ |  |  /  |__/ __ \|  | |  (  <_> )   |  \  #
+#  \______  /____|_  /\______  / \____|__  /\___  >____/ |__|   \____/|__|_|  /\____/\____ |____/|____(____  /__| |__|\____/|___|  /  # 
+#         \/       \/        \/          \/     \/                          \/            \/               \/                    \/   #
+#-------------------------------------------------------------------------------------------------------------------------------------#
+
+This script has been developed by Srinivas Balachander and Harsh Pathak for checking the IDs in JSON files of MRIs, for the Clinical Research Centre for Neuromodulation in Psychiatry. 
+
+Version edited on 23.04.2024
+
+The following arguments are REQUIRED:
+
+ CRC_BIDS_Audit.sh --bids <path/to/bidsdir> --acq <T1/rest>
+
+
+EOF
+exit 1
+}
+
+
+[ _$1 = _ ] && Usage
+
+
+# Parsing arguments from the command line
+
+while [ _$1 != _ ]; do
+        case "$1" in
+        --bids)
+         BIDSDIR=$2
+         shift
+         ;;
+         --acq)
+         ACQ=$2
+         shift
+         ;;
+         *)
+         echo "Unknown argument: $1";;
+        esac
+        shift
+done
+
+# Checking if FreeSurfer is available
+
+if [ ! command -v mri_info &> /dev/null ]
+then 
+echo "FreeSurfer is needed for this script to run" 
+exit 1 
+else 
+echo "FreeSurfer exists, awesome!" 
+fi
+
+
+# Use the parsed arguments above to set a few paths
+
+if [ "${ACQ}" = "T1" ] || [ "${ACQ}" = "t1" ] || [ "${ACQ}" = "anat" ]; then
+        subfol=anat
+        jsonpath=*run-01*_T1w.json
+	niipath=*_T1w.nii.gz
+elif [ "${ACQ}" = "rest" ] || [ "${ACQ}" = "func" ]; then
+        subfol=func
+        jsonpath=*run-01*_bold.json
+	niipath=*_bold.nii.gz
+fi
+
+
+# Get a summary of number of subjects, sessions, acquisitions
+
+NSUBJS=`ls -d ${BIDSDIR}/sub-* | wc -l`
+NSCANS=`ls -d ${BIDSDIR}/sub-*/ses-* | wc -l`
+NACQS=`ls -d ${BIDSDIR}/sub-*/ses-*/${subfol}/${jsonpath} | wc -l`
+NACQS_BL=`ls -d ${BIDSDIR}/sub-*/ses-10/${subfol}/${jsonpath} | wc -l`
+
+echo "Total number of subjects : ${NSUBJS}"
+echo "Total number of scan sessions : ${NSCANS}"
+echo "Number of ${ACQ} acquisitions : ${NACQS}"
+echo "Number of baseline ${ACQ} acquisitions : ${NACQS_BL}"
+
+# Run a loop to get these details for all subjects/sessions
+
+echo -e "SUBJ_ID \t  SES_ID \t ACQ \t NRUNS \t CRC_ID \t  PTNAME \t SCAN_DATE \t SEX \t DOB \t DIMENSIONS"
+
+for SUBJ_ID in `basename -a ${BIDSDIR}/*` 
+do
+
+for SES_ID in `basename -a ${BIDSDIR}/${SUBJ_ID}/*`
+do
+
+if [ -e ${BIDSDIR}/${SUBJ_ID}/${SES_ID}/${subfol}/${jsonpath} ]; then
+
+jsonfile=`ls ${BIDSDIR}/${SUBJ_ID}/${SES_ID}/${subfol}/${jsonpath}`
+niifile=`ls ${BIDSDIR}/${SUBJ_ID}/${SES_ID}/${subfol}/*run-01*${niipath}`
+
+NRUNS=`ls ${BIDSDIR}/${SUBJ_ID}/${SES_ID}/${subfol}/${niipath} | wc -l`	
+
+CRC_ID=`jq '.ProcedureStepDescription' ${jsonfile}`
+PTNAME=`jq '.PatientName' ${jsonfile}`
+SCAN_DATE=`jq '.AcquisitionDateTime' ${jsonfile}`
+SEX=`jq '.PatientSex' ${jsonfile}`
+DOB=`jq '.PatientBirthDate' ${jsonfile}`
+DIM=`mri_info ${niifile} --dim` 
+
+echo -e "${SUBJ_ID} \t  ${SES_ID} \t ${ACQ} \t ${NRUNS} \t ${CRC_ID} \t  ${PTNAME} \t ${SCAN_DATE} \t ${SEX} \t ${DOB} \t ${DIM} "
+
+else
+
+echo -e "${SUBJ_ID} \t  ${SES_ID} \t ${ACQ} \t 0 "
+
+fi
+
+done 
+done
